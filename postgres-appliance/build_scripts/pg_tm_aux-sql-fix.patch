@@ -1,0 +1,31 @@
+From 9991c71c939fa4c3b088f8313b727b441c7663a7 Mon Sep 17 00:00:00 2001
+From: dsdashun <dsdashun@qq.com>
+Date: Wed, 11 Dec 2024 16:06:10 +0800
+Subject: [PATCH] fix: drop existing function before create the new
+
+---
+ pg_tm_aux--1.0--1.1.sql | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/pg_tm_aux--1.0--1.1.sql b/pg_tm_aux--1.0--1.1.sql
+index 22bd855..5352ca6 100644
+--- a/pg_tm_aux--1.0--1.1.sql
++++ b/pg_tm_aux--1.0--1.1.sql
+@@ -6,6 +6,7 @@
+ --
+ -- pg_create_logical_replication_slot_lsn()
+ --
++DROP FUNCTION IF EXISTS pg_create_logical_replication_slot_lsn(name, name, boolean, pg_lsn);
+ CREATE OR REPLACE FUNCTION pg_create_logical_replication_slot_lsn(
+     IN slot_name name, IN plugin name,
+     IN temporary boolean DEFAULT false, IN restart_lsn pg_lsn DEFAULT null,
+@@ -16,4 +17,4 @@ LANGUAGE C
+ STRICT VOLATILE 
+ AS 'MODULE_PATHNAME', 'pg_create_logical_replication_slot_lsn';
+ 
+--- NOTE: pg_create_logical_replication_slot_lsn() checks permissions internally, no need to worry here
+\ No newline at end of file
++-- NOTE: pg_create_logical_replication_slot_lsn() checks permissions internally, no need to worry here
+-- 
+2.25.1
+

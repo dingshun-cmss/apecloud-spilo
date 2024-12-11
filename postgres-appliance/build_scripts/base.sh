@@ -60,9 +60,13 @@ curl -sL "https://github.com/zalando-pg/bg_mon/archive/$BG_MON_COMMIT.tar.gz" | 
 curl -sL "https://github.com/zalando-pg/pg_auth_mon/archive/$PG_AUTH_MON_COMMIT.tar.gz" | tar xz
 curl -sL "https://github.com/cybertec-postgresql/pg_permissions/archive/$PG_PERMISSIONS_COMMIT.tar.gz" | tar xz
 curl -sL "https://github.com/zubkov-andrei/pg_profile/archive/$PG_PROFILE.tar.gz" | tar xz
+
+git config --global user.email "dingshun_yewu@cmss.chinamobile.com"
+git config --global user.name "dingshun-cmss"
 git clone -b "$SET_USER" https://github.com/pgaudit/set_user.git
 git clone https://github.com/timescale/timescaledb.git
 git clone https://github.com/pgvector/pgvector.git
+git clone https://github.com/x4m/pg_tm_aux.git
 
 apt-get install -y \
     postgresql-common \
@@ -153,6 +157,19 @@ for version in $DEB_PG_SUPPORTED_VERSIONS; do
             git reset --hard
             git clean -f -d
         done
+    )
+
+    # install pg_tm_aux
+    (
+        OLD_PWD=$PWD
+        cd pg_tm_aux
+        git am < "$OLD_PWD/pg_tm_aux-sql-fix.patch"
+        CPATH="/usr/include/postgresql/$version/server" \
+        make PG_CONFIG="/usr/lib/postgresql/$version/bin/pg_config" USE_PGXS=1
+        install --strip --mode=0755 pg_tm_aux.so "/usr/lib/postgresql/$version/lib/"
+        install --compare --mode=0644 pg_tm_aux.control pg_tm_aux*.sql "/usr/share/postgresql/$version/extension/"
+        git reset --hard
+        git clean -f -d
     )
 
     if [ "${TIMESCALEDB_APACHE_ONLY}" != "true" ] && [ "${TIMESCALEDB_TOOLKIT}" = "true" ]; then

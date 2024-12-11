@@ -42,6 +42,7 @@ COPY --from=ubuntu-18 /usr/lib/locale/locale-archive /usr/lib/locale/locale-arch
 
 COPY cron_unprivileged.c /builddeps/
 COPY build_scripts/base.sh /builddeps/
+COPY build_scripts/pg_tm_aux-sql-fix.patch /builddeps/
 COPY --from=dependencies-builder /builddeps/*.deb /builddeps/
 
 ARG PGVERSION
